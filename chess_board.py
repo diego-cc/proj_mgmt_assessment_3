@@ -5,9 +5,77 @@ Created at: 15/09/2020 5:01 pm
 File: chess_board.py
 """
 import string
-from typing import Dict, Union
-from chess_pieces import ChessPieces
+from typing import Optional, List
 
+import chess
+
+
+class ChessBoard:
+    def __init__(self, initial_state: Optional[str] = None):
+        self.__initial_state = initial_state
+        if initial_state is not None:
+            self.__board = chess.Board(initial_state)
+        else:
+            self.__board = chess.Board()
+        rows, cols = (8, 8)
+        self.__positions = [[string.ascii_letters[i] + str(j + 1) for i in range(cols)] for j in range(rows)]
+
+    @property
+    def positions(self):
+        return self.__positions
+
+    @property
+    def initial_state(self):
+        return self.__initial_state
+
+    @property
+    def board(self):
+        return self.__board
+
+    @board.setter
+    def board(self, b: chess.Board):
+        self.__board = b
+
+    def move_piece(self, uci_move: str) -> bool:
+        m = chess.Move.from_uci(uci_move)
+        if m in self.board.legal_moves:
+            self.board.push(m)
+            return True
+        return False
+
+    def print(self):
+        ChessBoard.__print_files()
+        b = str(self.__board)
+        ranks = b.split("\n")
+
+        numbered_ranks = ChessBoard.__print_ranks(ranks)
+
+        b_to_str = "\n".join(numbered_ranks)
+        print(b_to_str, end="", flush=True)
+        ChessBoard.__print_files()
+
+    @staticmethod
+    def __print_files():
+        print("\n")
+        print(" " * 6, end="", flush=True)
+        for p in range(8):
+            print(string.ascii_letters[p] + " ", end="", flush=True)
+        print("\n")
+
+    @staticmethod
+    def __print_ranks(ranks: List[str]):
+        for r in range(len(ranks)):
+            pieces = ranks[r].split(" ")
+            # prepend rank
+            pieces.insert(0, str(8 - r) + " " * 4)
+            # append rank
+            pieces.append(" " * 4 + str(8 - r))
+            ranks[r] = " ".join(pieces)
+        return ranks
+
+
+"""
+Initial approach, implementing a chess board class from scratch
 
 class ChessBoard:
     __initial_state = {
@@ -76,21 +144,21 @@ class ChessBoard:
         "g8": ChessPieces.BLACK_KNIGHT,
         "h8": ChessPieces.BLACK_ROOK
     }
-
     def __init__(self):
         rows, cols = (8, 8)
         positions = [[string.ascii_letters[i] + str(j + 1) for i in range(cols)] for j in range(rows)]
         self.__positions = positions
 
     @property
-    def board(self):
+    def positions(self):
         return self.__positions
 
     @property
     def initial_state(self):
         return self.__initial_state
 
-    def print_letters(self):
+    @staticmethod
+    def print_letters():
         print(" " * 5, end="", flush=True)
         for p in range(8):
             print(string.ascii_letters[p] + "  ", end="", flush=True)
@@ -98,7 +166,7 @@ class ChessBoard:
         print("\n")
 
     def print_state(self, state: Dict[str, Union[str, ChessPieces]] = __initial_state):
-        self.print_letters()
+        ChessBoard.print_letters()
         # print each row
         for r in range(8, 0, -1):
             print(r, end="", flush=True)
@@ -121,7 +189,5 @@ class ChessBoard:
             print(str(r), end="", flush=True)
             print()
         print()
-        self.print_letters()
-
-    def map_pieces_to_positions(self, pos: str):
-        pass
+        ChessBoard.print_letters()
+"""

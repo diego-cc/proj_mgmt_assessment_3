@@ -1,3 +1,5 @@
 from chess_board import ChessBoard
-c = ChessBoard()
-c.print_state()
+
+chess_board = ChessBoard()
+
+chess_board.print()
