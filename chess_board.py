@@ -5,6 +5,7 @@ Created at: 15/09/2020 5:01 pm
 File: chess_board.py
 """
 import string
+from typing import Dict, Union
 from chess_pieces import ChessPieces
 
 
@@ -89,14 +90,38 @@ class ChessBoard:
     def initial_state(self):
         return self.__initial_state
 
-    def print_state(self):
-        print('\t', end="", flush=True)
+    def print_letters(self):
+        print(" " * 5, end="", flush=True)
         for p in range(8):
-            print(string.ascii_letters[p] + '  ', end="", flush=True)
-        print('\t', end="", flush=True)
+            print(string.ascii_letters[p] + "  ", end="", flush=True)
+        print(" " * 4, end="", flush=True)
         print("\n")
+
+    def print_state(self, state: Dict[str, Union[str, ChessPieces]] = __initial_state):
+        self.print_letters()
         # print each row
-        print(f'\t')
+        for r in range(8, 0, -1):
+            print(r, end="", flush=True)
+            print(" " * 4, end="", flush=True)
+            for c in string.ascii_lowercase[:8]:
+                key = c + str(r)
+                if str(state[key]) == state[key]:
+                    if c != "h":
+                        print(state[key] + "  ", end="", flush=True)
+                    else:
+                        print(state[key], end="", flush=True)
+                        print(" " * 4, end="", flush=True)
+                else:
+                    if c != "h":
+                        print(state[key].value + "  ", end="", flush=True)
+                    else:
+                        print(state[key].value, end="", flush=True)
+                        print(" " * 4, end="", flush=True)
+
+            print(str(r), end="", flush=True)
+            print()
+        print()
+        self.print_letters()
 
     def map_pieces_to_positions(self, pos: str):
         pass
