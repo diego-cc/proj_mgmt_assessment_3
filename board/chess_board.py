@@ -67,10 +67,18 @@ class ChessBoard:
         if len(uci_move) < 4 or len(uci_move) > 5:
             return False
 
-        m = chess.Move.from_uci(uci_move)
-        if m in self.board.legal_moves:
-            self.board.push(m)
-            return True
+        try:
+            m = chess.Move.from_uci(uci_move)
+
+            if self.__board.is_castling(move=m):
+                print('This is a castling move\n')
+
+            if m in self.board.legal_moves:
+                self.board.push(m)
+                return True
+        except:
+            pass
+
         return False
 
     def print(self):
@@ -94,7 +102,7 @@ class ChessBoard:
 
     @staticmethod
     def __print_files():
-        """Prints files of the board (row with letters `a` to `f`)"""
+        """Prints files of the board (columns with letters `a` to `h`)"""
 
         print("\n")
         print(" " * 6, end="", flush=True)
@@ -104,7 +112,7 @@ class ChessBoard:
 
     @staticmethod
     def __print_ranks(ranks: List[str]):
-        """Prints ranks of the board (columns with numbers `8` to `1`, along with pieces separated by spaces).
+        """Prints ranks of the board (rows with numbers `8` to `1`, along with pieces separated by spaces).
 
         :param ranks: Ranks retrieved from the current state of the board
         :return: String representation of the ranks

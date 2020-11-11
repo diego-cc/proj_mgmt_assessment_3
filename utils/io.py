@@ -51,9 +51,10 @@ def add_turn_to_file(board: b.ChessBoard, current_player: player.Player, file_na
     if not os.path.exists(f'results/{file_name}'):
         raise IOError('The file specified does not exist')
 
-    with open(file=f'results/{file_name}', mode='a', encoding='utf-8') as f:
-        f.writelines([
-            f'Turn {len(board.board.move_stack)} - {current_player.print_name_and_colour()}: {str(board.board.peek())}\n\n',
-            str(board.board),
-            '\n\n'
-        ])
+    if len(board.board.move_stack):
+        with open(file=f'results/{file_name}', mode='a', encoding='utf-8') as f:
+            f.writelines([
+                f'Turn {len(board.board.move_stack)} - {current_player.print_name_and_colour()}: {str(board.board.peek())}\n\n',
+                str(board.board),
+                '\n\n'
+            ])
