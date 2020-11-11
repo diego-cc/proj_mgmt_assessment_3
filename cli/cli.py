@@ -4,6 +4,7 @@ Author: Diego C. <20026893@tafe.wa.edu.au>
 Created at: 11/11/2020 5:17 pm
 File: cli.py
 """
+import os
 import time
 from typing import Tuple
 import colorama
@@ -66,7 +67,11 @@ def start():
     """Entry point of the game."""
 
     print('\nWelcome! This is a basic chess game.')
-    print('Type "q" and press Enter anytime to quit the game.\n')
+    print('Your move should use standard algebraic notation, e.g. e2e4, g1f3, etc.')
+    print('You do not need to add an "x" when performing captures, the program understands your intention.')
+    print('Be explicit when performing castling, use a literal notation (e.g. e1h1), instead of O-O or O-O-O.')
+    print('Moves that would put your own king in check are not allowed.')
+    print('\nType "q" and press Enter anytime to quit the game.\n')
 
     p1_name = get_player_name(1)
 
@@ -118,6 +123,9 @@ def start():
 
     # main game loop
     while not inp == 'q':
+        # clear terminal before printing the board (works on Windows and Unix systems)
+        os.system('cls' if os.name == 'nt' else 'clear')
+
         b.print()
         move, b = play_turn(p=current_player, b=b, file_name=f)
 
