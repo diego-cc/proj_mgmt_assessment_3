@@ -1,5 +1,3 @@
-from chess_board import ChessBoard
+import cli.cli as cli
 
-chess_board = ChessBoard()
-
-chess_board.print()
+cli.start()
