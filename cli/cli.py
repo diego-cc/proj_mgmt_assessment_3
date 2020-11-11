@@ -14,6 +14,12 @@ import board.chess_board as board
 
 
 def get_player_name(player_num: int, player_colour: int = colorama.Fore.WHITE) -> str:
+    """Asks for the current player's name.
+
+    :param player_num: Current player number (e.g. 1 or 2)
+    :param player_colour: Optional foreground colour to highlight the text input
+    :return: Player name
+    """
     p = input(f'{player_colour}(Player {str(player_num)}) Enter your name: ')
 
     while not p.strip():
@@ -27,6 +33,12 @@ def get_player_name(player_num: int, player_colour: int = colorama.Fore.WHITE) -
 
 
 def play_turn(p: player.Player, b: board.ChessBoard) -> Tuple[str, board.ChessBoard]:
+    """Lets the current player `p` decide their turn.
+
+    :param p: Current player
+    :param b: Current state of the chess board
+    :return: A tuple containing the move input decided by `p` and the next state of `b`, respectively
+    """
     print(f'\nIt is now {str(p)}\'s turn.\n')
     move = input('Enter your move: ')
     print()
@@ -43,6 +55,8 @@ def play_turn(p: player.Player, b: board.ChessBoard) -> Tuple[str, board.ChessBo
 
 
 def start():
+    """Entry point of the game."""
+
     print('\nWelcome! This is a basic chess game.')
     print('Type "q" and press Enter anytime to quit the game.\n')
 

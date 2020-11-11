@@ -12,6 +12,9 @@ import player.player as player
 
 
 class ChessBoard:
+    """This class keeps track of the current state of the board, including retrieving pieces, making moves and
+    printing to the terminal."""
+
     def __init__(self, white: player.Player, black: player.Player, initial_state: Optional[str] = None):
         self.__white = white
         self.__black = black
@@ -48,9 +51,19 @@ class ChessBoard:
         return self.__black
 
     def get_piece_at(self, square: str) -> Optional[chess.Piece]:
+        """Retrieves a piece from a certain `square`.
+
+        :param square: String representation of a square in the board (e.g. a2, e5, etc.)
+        :return: Piece found at the specified `square` or None if not found
+        """
         return self.__board.piece_at(chess.Square(square))
 
     def move_piece(self, uci_move: str) -> bool:
+        """Validates and moves a piece based on the specified `uci_move`.
+
+        :param uci_move: String representation of a UCI move. It consists of a "from" position and a "to" position concatenated together, without spaces. For instance, a starting move for white could be `f2f4`, where a white pawn moves from the f2 square to f4.
+        :return: Whether the move is legal. If so, it gets pushed into the moves stack of the board and its state is updated.
+        """
         if len(uci_move) < 4 or len(uci_move) > 5:
             return False
 
@@ -61,6 +74,8 @@ class ChessBoard:
         return False
 
     def print(self):
+        """Prints the current state of the board, along with the name of each player."""
+
         print(" " * 12, end="", flush=True)
         print(str(self.__black))
 
@@ -79,6 +94,8 @@ class ChessBoard:
 
     @staticmethod
     def __print_files():
+        """Prints files of the board (row with letters `a` to `f`)"""
+
         print("\n")
         print(" " * 6, end="", flush=True)
         for p in range(8):
@@ -87,6 +104,11 @@ class ChessBoard:
 
     @staticmethod
     def __print_ranks(ranks: List[str]):
+        """Prints ranks of the board (columns with numbers `8` to `1`, along with pieces separated by spaces).
+
+        :param ranks: Ranks retrieved from the current state of the board
+        :return: String representation of the ranks
+        """
         for r in range(len(ranks)):
             pieces = ranks[r].split(" ")
             # prepend rank
