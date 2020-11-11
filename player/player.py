@@ -41,3 +41,8 @@ class Player:
 
     def __str__(self):
         return f'{self.__cli_fore}{self.__cli_back}{self.__name}{colorama.Style.RESET_ALL}'
+
+    def print_name_and_colour(self):
+        if self.__colour == 0:
+            return f'{self.__name} (Black)'
+        return f'{self.__name} (White)'

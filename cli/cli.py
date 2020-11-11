@@ -4,6 +4,7 @@ Author: Diego C. <20026893@tafe.wa.edu.au>
 Created at: 11/11/2020 5:17 pm
 File: cli.py
 """
+import time
 from typing import Tuple
 import colorama
 import random
@@ -11,6 +12,7 @@ import chess
 import sys
 import player.player as player
 import board.chess_board as board
+import utils.io
 
 
 def get_player_name(player_num: int, player_colour: int = colorama.Fore.WHITE) -> str:
@@ -32,13 +34,17 @@ def get_player_name(player_num: int, player_colour: int = colorama.Fore.WHITE) -
     return p
 
 
-def play_turn(p: player.Player, b: board.ChessBoard) -> Tuple[str, board.ChessBoard]:
+def play_turn(p: player.Player, b: board.ChessBoard, file_name: str) -> Tuple[str, board.ChessBoard]:
     """Lets the current player `p` decide their turn.
 
+    :param file_name: Name of an existing file to add the turn
     :param p: Current player
     :param b: Current state of the chess board
     :return: A tuple containing the move input decided by `p` and the next state of `b`, respectively
     """
+    if len(b.board.move_stack):
+        print(f'\nLast move: {str(b.board.peek())}')
+
     print(f'\nIt is now {str(p)}\'s turn.\n')
     move = input('Enter your move: ')
     print()
@@ -50,6 +56,8 @@ def play_turn(p: player.Player, b: board.ChessBoard) -> Tuple[str, board.ChessBo
             print()
             if move == 'q':
                 break
+
+        utils.io.add_turn_to_file(board=b, current_player=p, file_name=file_name)
 
     return move, b
 
@@ -98,13 +106,20 @@ def start():
 
     print(colorama.Style.RESET_ALL)
 
+    # Initialise file to keep track of the board and each move
+    f = f'{b.white.name}_vs_{b.black.name}_{time.strftime("%d_%m_%Y_%H_%M_%S")}.txt'
+
+    utils.io.initialise_file(
+        file_name=f,
+        board=b)
+
     inp = ''
     current_player = b.white
 
     # main game loop
     while not inp == 'q':
         b.print()
-        move, b = play_turn(p=current_player, b=b)
+        move, b = play_turn(p=current_player, b=b, file_name=f)
 
         if current_player == b.white:
             current_player = b.black
