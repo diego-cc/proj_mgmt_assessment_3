@@ -69,7 +69,7 @@ def play_turn(p: player.Player, b: board.ChessBoard, file_name: str) -> Tuple[st
             if move == 'q':
                 break
 
-        utils.io.add_turn_to_file(board=b, current_player=p, file_name=file_name)
+        utils.io.add_turn_to_file(board=b, file_name=file_name)
 
     return move, b
 
@@ -78,12 +78,22 @@ def start():
     """Entry point of the game."""
 
     print('\nWelcome! This is a basic chess game.\n')
-    print('Your move should use standard algebraic notation, e.g. e2e4, g1f3, etc.')
-    print('You do not need to add an "x" or the letter that represents your piece when performing captures, '
-          'the program understands your intention.')
-    print('Be explicit when performing castling, use a literal notation (e.g. e1h1), instead of O-O or O-O-O.')
-    print('Moves that would put your own king in check are not allowed.')
-    print('The current state of the board will be updated in a file inside the "results/" directory on each turn.')
+    print(
+        f'{colorama.Fore.LIGHTGREEN_EX}->{colorama.Style.RESET_ALL} Your move should use standard algebraic notation, '
+        f'e.g. e2e4, g1f3, etc.')
+    print(
+        f'{colorama.Fore.LIGHTGREEN_EX}->{colorama.Style.RESET_ALL} You do not need to add an "x" or the letter that '
+        f'represents your piece when performing captures, '
+        'the program understands your intention.')
+    print(
+        f'{colorama.Fore.LIGHTGREEN_EX}->{colorama.Style.RESET_ALL} Be explicit when performing castling, use a '
+        f'literal notation (e.g. e1h1), instead of O-O or O-O-O.')
+    print(
+        f'{colorama.Fore.LIGHTGREEN_EX}->{colorama.Style.RESET_ALL} Moves that would put your own king in check are '
+        f'not allowed.')
+    print(
+        f'{colorama.Fore.LIGHTGREEN_EX}->{colorama.Style.RESET_ALL} The current state of the board will be updated in '
+        f'a file inside the "results/" directory on each turn.')
     print('\nType "q" and press Enter anytime to quit the game.\n')
 
     p1_name = get_player_name(1)

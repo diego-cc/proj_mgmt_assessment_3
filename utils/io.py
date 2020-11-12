@@ -6,10 +6,11 @@ File: utils.py
 """
 
 import os
-import board.chess_board as b
 import time
+
 import chess
-import player.player as player
+
+import board.chess_board as b
 
 
 def initialise_file(board: b.ChessBoard, file_name: str = 'game_results.txt'):
@@ -43,11 +44,12 @@ def initialise_file(board: b.ChessBoard, file_name: str = 'game_results.txt'):
              '\n\n'])
 
 
-def add_turn_to_file(board: b.ChessBoard, current_player: player.Player, file_name: str = 'game_results.txt'):
+def add_turn_to_file(board: b.ChessBoard, file_name: str = 'game_results.txt'):
     """Adds a new turn to a file that has already been initialised.
 
+    The `seek()` function is used to update two characters in the board.
+
     :param board: Current state of the board
-    :param current_player: Current player
     :param file_name: Name of the file to be saved
     :raises IOError: If the file has not been initialised
     """
