@@ -24,11 +24,19 @@ class ChessBoard:
         else:
             self.__board = chess.Board()
         rows, cols = (8, 8)
-        self.__positions = [[string.ascii_letters[i] + str(j + 1) for i in range(cols)] for j in range(rows)]
+        self.__squares = [[string.ascii_letters[i] + str(j + 1) for i in range(cols)] for j in range(rows)]
+
+        # reverse to switch to a top-down perspective of the board
+        self.__squares = list(self.__squares.__reversed__())
+        self.__squares_one_line = self.print_squares_in_one_line()
 
     @property
-    def positions(self):
-        return self.__positions
+    def squares(self):
+        return self.__squares
+
+    @property
+    def squares_one_line(self):
+        return self.__squares_one_line
 
     @property
     def initial_state(self):
@@ -56,11 +64,12 @@ class ChessBoard:
         :param square: String representation of a square in the board (e.g. a2, e5, etc.)
         :return: Piece found at the specified `square` or None if not found
         """
-        return self.__board.piece_at(chess.Square(square))
+        return self.__board.piece_at(chess.parse_square(square))
 
-    def move_piece(self, uci_move: str) -> bool:
+    def move_piece(self, uci_move: str, current_player: player.Player) -> bool:
         """Validates and moves a piece based on the specified `uci_move`.
 
+        :param current_player: Current player making the move
         :param uci_move: String representation of a UCI move. It consists of a "from" position and a "to" position concatenated together, without spaces. For instance, a starting move for white could be `f2f4`, where a white pawn moves from the f2 square to f4.
         :return: Whether the move is legal. If so, it gets pushed into the moves stack of the board and its state is updated.
         """
@@ -74,7 +83,10 @@ class ChessBoard:
                 print('This is a castling move\n')
 
             if m in self.board.legal_moves:
-                self.board.push(m)
+                if self.__board.is_capture(move=m):
+                    current_player.take_piece(piece=self.get_piece_at(square=chess.square_name(m.to_square)))
+
+                self.__board.push(m)
                 return True
         except:
             pass
@@ -125,3 +137,28 @@ class ChessBoard:
             pieces.append(" " * 4 + str(8 - r))
             ranks[r] = " ".join(pieces)
         return ranks
+
+    def map_piece_to_square(self, pos: str) -> str:
+        p = self.get_piece_at(square=pos)
+
+        if p:
+            return str(p)
+        return '.'
+
+    def print_in_one_line(self) -> str:
+        mapped_pieces = []
+
+        for row in self.__squares:
+            r = ''.join(map(self.map_piece_to_square, row))
+            mapped_pieces.append(r)
+
+        return '/'.join(mapped_pieces)
+
+    def print_squares_in_one_line(self) -> List[str]:
+        # flatten 2D list of files/ranks first
+        flattened_squares = [square for ranks in self.__squares for square in ranks]
+
+        # delimit ranks by adding a "/" after positions h8 to h2
+        for last_square in ['h8', 'h7', 'h6', 'h5', 'h4', 'h3', 'h2']:
+            flattened_squares.insert(flattened_squares.index(last_square) + 1, '/')
+        return flattened_squares

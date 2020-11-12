@@ -51,7 +51,7 @@ def play_turn(p: player.Player, b: board.ChessBoard, file_name: str) -> Tuple[st
     print()
 
     if move != 'q':
-        while not b.move_piece(uci_move=move):
+        while not b.move_piece(uci_move=move, current_player=p):
             print('Illegal move, please try again.')
             move = input('Enter your move: ')
             print()
@@ -124,7 +124,7 @@ def start():
     # main game loop
     while not inp == 'q':
         # clear terminal before printing the board (works on Windows and Unix systems)
-        os.system('cls' if os.name == 'nt' else 'clear')
+        # os.system('cls' if os.name == 'nt' else 'clear')
 
         b.print()
         move, b = play_turn(p=current_player, b=b, file_name=f)

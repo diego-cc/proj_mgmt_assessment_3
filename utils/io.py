@@ -8,6 +8,7 @@ File: utils.py
 import os
 import board.chess_board as b
 import time
+import chess
 import player.player as player
 
 
@@ -24,7 +25,7 @@ def initialise_file(board: b.ChessBoard, file_name: str = 'game_results.txt'):
 
     with open(file=f'results/{file_name}', mode='w', encoding='utf-8') as f:
         f.writelines(
-            ['This file keeps track of the state of the board and the moves on each turn from the last game played.\n',
+            ['This file keeps track of the state of the board on the latest turn played.\n',
              'Lowercase letters represent black pieces and uppercase ones represent white pieces.\n\n',
              'Each piece is represented as:\n',
              '- R or r: Rook\n',
@@ -33,10 +34,12 @@ def initialise_file(board: b.ChessBoard, file_name: str = 'game_results.txt'):
              '- Q or q: Queen\n',
              '- K or k: King\n',
              '- P or p: Pawn\n\n',
+             'The entire board is represented in a single line, from top (black side) to bottom (white side)\n',
+             'Rows are separated by forward slashes (/) and empty squares are represented by dots (.)\n\n',
              f'Game: {board.white.name} (White) vs {board.black.name} (Black) - '
              f'Played at {time.strftime("%d/%m/%Y %H:%M:%S")}\n\n'
-             'Initial state of the board:\n\n',
-             str(board.board),
+             'Current state of the board:\n\n',
+             board.print_in_one_line(),
              '\n\n'])
 
 
@@ -46,15 +49,49 @@ def add_turn_to_file(board: b.ChessBoard, current_player: player.Player, file_na
     :param board: Current state of the board
     :param current_player: Current player
     :param file_name: Name of the file to be saved
-    :raises IOError: If the file does not exist
+    :raises IOError: If the file has not been initialised
     """
     if not os.path.exists(f'results/{file_name}'):
         raise IOError('The file specified does not exist')
 
-    if len(board.board.move_stack):
-        with open(file=f'results/{file_name}', mode='a', encoding='utf-8') as f:
-            f.writelines([
-                f'Turn {len(board.board.move_stack)} - {current_player.print_name_and_colour()}: {str(board.board.peek())}\n\n',
-                str(board.board),
-                '\n\n'
-            ])
+    current_move = board.board.peek()
+    from_square = chess.square_name(current_move.from_square)
+    to_square = chess.square_name(current_move.to_square)
+
+    current_piece_from = board.get_piece_at(square=from_square)
+    current_piece_to = board.get_piece_at(square=to_square)
+
+    with open(file=f'results/{file_name}', mode='r+', encoding='utf-8') as f:
+        current_line = f.readline()
+
+        while 'Current state of the board:' not in current_line:
+            current_line = f.readline()
+
+        # jump two 2 newline characters
+        # we have reached the line containing the board
+        initial_cursor = f.seek(f.tell() + 2)
+
+        # get "from" position that needs to be updated
+        squares_one_line = board.squares_one_line
+        from_pos = squares_one_line.index(from_square)
+
+        # seek "from" position
+        f.seek(initial_cursor + from_pos)
+
+        # replace "from" square
+        if current_piece_from:
+            f.write(str(current_piece_from))
+        else:
+            f.write('.')
+
+        # get "to" position
+        to_pos = squares_one_line.index(to_square)
+
+        # seek "to" position
+        f.seek(initial_cursor + to_pos)
+
+        # replace "to" square
+        if current_piece_to:
+            f.write(str(current_piece_to))
+        else:
+            f.write('.')
