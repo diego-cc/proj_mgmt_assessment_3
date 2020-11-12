@@ -46,7 +46,18 @@ def play_turn(p: player.Player, b: board.ChessBoard, file_name: str) -> Tuple[st
     if len(b.board.move_stack):
         print(f'\nLast move: {str(b.board.peek())}')
 
+    if len(b.white.pieces_taken):
+        print(f'Pieces captured by {str(b.white)}: {", ".join((map(str, b.white.pieces_taken)))}')
+
+    if len(b.black.pieces_taken):
+        print(f'Pieces captured by {str(b.black)}: {", ".join((map(str, b.black.pieces_taken)))}')
+
+    if p.is_in_check:
+        print(f'{colorama.Fore.LIGHTRED_EX}Watch out, your king is in check!')
+        print(colorama.Style.RESET_ALL)
+
     print(f'\nIt is now {str(p)}\'s turn.\n')
+
     move = input('Enter your move: ')
     print()
 
@@ -66,11 +77,13 @@ def play_turn(p: player.Player, b: board.ChessBoard, file_name: str) -> Tuple[st
 def start():
     """Entry point of the game."""
 
-    print('\nWelcome! This is a basic chess game.')
+    print('\nWelcome! This is a basic chess game.\n')
     print('Your move should use standard algebraic notation, e.g. e2e4, g1f3, etc.')
-    print('You do not need to add an "x" when performing captures, the program understands your intention.')
+    print('You do not need to add an "x" or the letter that represents your piece when performing captures, '
+          'the program understands your intention.')
     print('Be explicit when performing castling, use a literal notation (e.g. e1h1), instead of O-O or O-O-O.')
     print('Moves that would put your own king in check are not allowed.')
+    print('The current state of the board will be updated in a file inside the "results/" directory on each turn.')
     print('\nType "q" and press Enter anytime to quit the game.\n')
 
     p1_name = get_player_name(1)
@@ -124,10 +137,16 @@ def start():
     # main game loop
     while not inp == 'q':
         # clear terminal before printing the board (works on Windows and Unix systems)
-        # os.system('cls' if os.name == 'nt' else 'clear')
+        os.system('cls' if os.name == 'nt' else 'clear')
 
         b.print()
         move, b = play_turn(p=current_player, b=b, file_name=f)
+
+        # checkmate?
+        if b.is_checkmate:
+            print(
+                f'{colorama.Fore.LIGHTGREEN_EX}Congratulations!{colorama.Style.RESET_ALL} {str(b.winner)} {colorama.Fore.LIGHTGREEN_EX}has won!{colorama.Style.RESET_ALL}')
+            break
 
         if current_player == b.white:
             current_player = b.black

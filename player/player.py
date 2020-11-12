@@ -15,6 +15,7 @@ class Player:
         self.__pieces_taken = []
         self.__cli_fore = cli_fore
         self.__cli_back = cli_back
+        self.__is_in_check = False
 
     @property
     def name(self):
@@ -35,6 +36,14 @@ class Player:
     @property
     def pieces_taken(self):
         return self.__pieces_taken
+
+    @property
+    def is_in_check(self):
+        return self.__is_in_check
+
+    @is_in_check.setter
+    def is_in_check(self, value: bool):
+        self.__is_in_check = value
 
     def take_piece(self, piece: chess.Piece):
         self.__pieces_taken.append(piece)

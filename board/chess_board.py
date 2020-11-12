@@ -26,6 +26,8 @@ class ChessBoard:
         rows, cols = (8, 8)
         self.__squares = [[string.ascii_letters[i] + str(j + 1) for i in range(cols)] for j in range(rows)]
 
+        self.__is_checkmate = False
+        self.__winner = None
         # reverse to switch to a top-down perspective of the board
         self.__squares = list(self.__squares.__reversed__())
         self.__squares_one_line = self.print_squares_in_one_line()
@@ -58,6 +60,18 @@ class ChessBoard:
     def black(self):
         return self.__black
 
+    @property
+    def is_checkmate(self):
+        return self.__is_checkmate
+
+    @property
+    def winner(self):
+        return self.__winner
+
+    @winner.setter
+    def winner(self, value: player.Player):
+        self.__winner = value
+
     def get_piece_at(self, square: str) -> Optional[chess.Piece]:
         """Retrieves a piece from a certain `square`.
 
@@ -86,7 +100,24 @@ class ChessBoard:
                 if self.__board.is_capture(move=m):
                     current_player.take_piece(piece=self.get_piece_at(square=chess.square_name(m.to_square)))
 
+                if self.__board.gives_check(move=m):
+                    if current_player.colour == chess.WHITE:
+                        # both players can't be in check simultaneously
+                        self.__white.is_in_check = False
+                        self.__black.is_in_check = True
+                    else:
+                        self.__white.is_in_check = True
+                        self.__black.is_in_check = False
+                else:
+                    self.__white.is_in_check = False
+                    self.__black.is_in_check = False
+
                 self.__board.push(m)
+
+                if self.__board.is_checkmate():
+                    self.__is_checkmate = True
+                    self.__winner = current_player
+
                 return True
         except:
             pass
@@ -139,6 +170,11 @@ class ChessBoard:
         return ranks
 
     def map_piece_to_square(self, pos: str) -> str:
+        """Replaces the current square with a string representation of the piece or a "." if it's empty.
+
+        :param pos: Current position in algebraic notation (e.g. a2, g5, etc.)
+        :return: Character that represents the piece at `pos` or a "." if empty
+        """
         p = self.get_piece_at(square=pos)
 
         if p:
@@ -146,6 +182,11 @@ class ChessBoard:
         return '.'
 
     def print_in_one_line(self) -> str:
+        """Transforms `self.__squares` into a string representation of the board in a single line, with ranks
+        delimited by forward slashes (/).
+
+        :return: String representation of the board
+        """
         mapped_pieces = []
 
         for row in self.__squares:
@@ -155,6 +196,11 @@ class ChessBoard:
         return '/'.join(mapped_pieces)
 
     def print_squares_in_one_line(self) -> List[str]:
+        """"Flattens" `self.__squares` into an 1D list from a top-down perspective, with ranks delimited by forward
+        slashes (/).
+
+        :return: List containing all squares of the board
+        """
         # flatten 2D list of files/ranks first
         flattened_squares = [square for ranks in self.__squares for square in ranks]
 
