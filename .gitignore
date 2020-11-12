@@ -235,3 +235,6 @@ dmypy.json
 
 # Results files
 results/
+
+# Functional tests evidence
+functional_tests_evidence/
